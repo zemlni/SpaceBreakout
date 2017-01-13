@@ -1,0 +1,30 @@
+1. at least one variant of Breakout that you thought was interesting and what was interesting about it
+	I will create a typical Breakout. This game will be space themed, the blocks will be planets and the balls will be 
+	asteroids. The paddle on the bottom will be a space ship which launches and moves back and forth to bounce the asteroids
+	toward the planets. The goal will be to destroy the planets before their gravity sucks the space ship to the top of the 
+	screen. When enough asteroids hit a planet it will blow up and some asteroids(depending on the size) will fly off. These
+	new asteroids can be used to hit other planets as well.
+	
+2. a general description of the different levels you intend to build (perhaps with "pictures" of the block configurations)
+	There will be three levels. The easiest level will feature a few small planets. The second level will have a few large
+	planets and a few small planets. The third level will have all large planets. The greater the total mass of the planets,
+	the stronger the space ship is pulled to the top of the screen toward the planets. If the space ship hits any planet or 
+	goes off the top of the screen or loses it's last asteroid, the game is lost.
+	  
+3. several different blocks you want to create
+	I will be using images of the planets of our solar system as the blocks to be destroyed.
+	
+4. several different power ups you want to create
+	One of the power ups are the extra asteroids that will emerge from a destroyed planet. Additionally, having destroyed 
+	half of the planets will enable the asteroids to travel faster in an effort to destroy the rest of the planets on time 
+	without being sucked to the top of the screen by the planets' gravity.
+	 
+5. several different cheat keys you are planning to include
+	I will include cheat keys to proceed to each of two higher levels. Additionally, I will include a cheat key to increase 
+	the width of the space ship and a cheat key to increase the width of the asteriod(s) bouncing around.
+	 	
+6. something extra you intend to add and why you think it is a substantial addition
+	Earth has to be the last planet to be destroyed or else the game is lost. Earth is where the space ship receives
+	directions, so until the path is cleared by destroying all other planets, it is too dangerous for the people of earth to
+	move to the ship to embark on their mission of searching for a new solar system. The current solar system needs to be 
+	destroyed because humans are too embarrassed for themselves and want to erase their history.
