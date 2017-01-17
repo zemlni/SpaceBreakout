@@ -9,13 +9,13 @@ public class Planet {
 	private int hits;
 	private int size;
 
-	public Planet(String src, int maxHits, int size) {
+	public Planet(String src, int size) {
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream(src));
 		planet = new ImageView(image);
-		this.size = size == 0 ? 50 : 75;
+		this.size = size;
 		planet.setFitHeight(this.size);
 		planet.setFitWidth(this.size);
-		this.maxHits = maxHits;
+		this.maxHits = size == 50 ? 2 : 3;
 		this.hits = 0;
 	}
 

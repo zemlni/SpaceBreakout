@@ -16,11 +16,10 @@ class Bouncer {
 		bouncer = new ImageView(image);
 		bouncer.setFitHeight(20);
 		bouncer.setFitWidth(20);
-		speedx = (int) (Math.random() * 500);
-		speedy = (int) (Math.random() * 500);
-		bouncer.setX(Math.random() * 400);
-		bouncer.setY(Math.random() * 400);
-		System.out.println("TEST");
+		speedx = (int) (Math.random() * 100);
+		speedy = (int) (Math.random() * 100);
+		//bouncer.setX(Math.random() * 400);
+		//bouncer.setY(Math.random() * 400);
 		left = false;
 		up = false;
 		size = 20;
@@ -64,5 +63,9 @@ class Bouncer {
 
 	public int getRadius() {
 		return size / 2;
+	}
+	
+	public void destroy(){
+		this.bouncer.setVisible(false);
 	}
 }
