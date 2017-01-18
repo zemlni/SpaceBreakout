@@ -35,6 +35,7 @@ public class Main extends Application {
 	public static final int LARGE_PLANET_SIZE = 75;
 	public static final int SMALL_PLANET_SIZE = 50;
 	public static final LevelsContainer LEVELS = new LevelsContainer();
+	public static final int PADDLE_STEP = 100;
 	private Timeline animation;
 	private Boolean paddleLeft;
 	private ArrayList<Bouncer> bouncers;
@@ -50,7 +51,6 @@ public class Main extends Application {
 	private Player player;
 	private Stage stage;
 	private KeyCode previousCode;
-
 	/**
 	 * Initialize what will be displayed and how it will be updated.
 	 */
@@ -119,9 +119,7 @@ public class Main extends Application {
 		paddle.setFitHeight(10);
 		paddle.setFitWidth(50);
 		root.getChildren().add(paddle);
-		paddle.setX(SIZE / 2 - paddle.getBoundsInLocal().getWidth() / 2);
-		paddle.setY(SIZE - paddle.getBoundsInLocal().getHeight());
-		paddleLeft = null;
+		resetPaddle();
 
 		bouncers = new ArrayList<Bouncer>();
 		planets = new ArrayList<Planet>();
@@ -135,8 +133,14 @@ public class Main extends Application {
 		// myScene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
 		return myScene;
 	}
+	private void resetPaddle(){
+		paddle.setX(SIZE / 2 - paddle.getBoundsInLocal().getWidth() / 2);
+		paddle.setY(SIZE - paddle.getBoundsInLocal().getHeight());
+		paddleLeft = null;
+	}
 
 	private void setUpLevel(int level) {
+		resetPaddle();
 		ArrayList<PlanetLoc> curLevel = LEVELS.getLevel(level);
 		for (PlanetLoc loc : curLevel) {
 			Planet temp = new Planet(loc.getName() + ".png", sizeDecider(loc.getName()));
@@ -179,7 +183,7 @@ public class Main extends Application {
 		} else if (beginning.equals("end")) {
 			screen = new Text("You lost\nBetter luck next time!\nPress enter to start again \nor q to quit.");
 		} else if (beginning.equals("quit")) {
-			screen = new Text("See you later!\nPress enter to start again or q to quit.");
+			screen = new Text("See you later!\nPress enter to start again \nor q to quit.");
 		} else {// (beginning.equals("win")){
 			screen = new Text("You won!\nCongratulations!\nPress enter to start again \nor q to quit.");
 		}
@@ -232,11 +236,11 @@ public class Main extends Application {
 
 		if (planets.size() == 0) {
 			player.incrementLevel();
-			System.out.println("passlevel");
-			if (player.getLevel() >= Player.MAX_LEVELS) {
+			System.out.println("passlevel" + player.getLevel());
+			if (player.getLevel() > Player.MAX_LEVELS) {
 				showTransitionScreen("win");
 				player.setLevel(1);
-				setUpLevel(player.getLevel());
+				setUpLevel(player.getLevel());//sets up level 1 right after winning game. maybe fix
 
 			} else {
 				showTransitionScreen("level");
@@ -293,7 +297,7 @@ public class Main extends Application {
 			}
 
 			// check if bouncer is hitting any other bouncers
-			for (int b = 0; b < bouncers.size(); b++) {
+			/*for (int b = 0; b < bouncers.size(); b++) {
 				if (b != i) {
 					if (bouncers.get(i).getBouncer().getBoundsInParent()
 							.intersects(bouncers.get(b).getBouncer().getBoundsInParent())) {
@@ -301,8 +305,10 @@ public class Main extends Application {
 						bouncers.get(b).setLeft(!bouncers.get(b).getLeft());
 					}
 				}
-			}
-
+			}*/
+			if (player.getStep() % PADDLE_STEP == 0)
+				paddle.setY(paddle.getY() - 1);
+			player.step();
 			if (paddle.getBoundsInParent().intersects(bouncers.get(i).getBouncer().getBoundsInParent())) {
 				// bouncer.setLeft(!bouncer.getLeft());
 				bouncers.get(i).setUp(true);
@@ -373,9 +379,11 @@ public class Main extends Application {
 			paddle.setX(paddle.getX() - KEY_INPUT_SPEED);
 		} else if (code == KeyCode.ENTER) {
 			// root.getChildren().remove(screen);
-			if (previousCode == KeyCode.Q) {
+			if (previousCode == KeyCode.Q || (player.getLevel() > Player.MAX_LEVELS && previousCode == KeyCode.N)) {
+				System.out.println("TEST");
 				player.reset();
 				showTransitionScreen("beginning");
+				setUpLevel(1);
 			} else
 				animation.play();
 		} else if (code == KeyCode.DIGIT1) {
@@ -400,10 +408,17 @@ public class Main extends Application {
 			if (previousCode == KeyCode.Q)
 				stage.close();
 			else
+				player.reset();
 				showTransitionScreen("quit");
 
 		} else if (code == KeyCode.D) {
-			paddle.setFitWidth(paddle.getFitWidth() * 2);
+			if (paddle.getFitWidth() <= SIZE/2)
+				paddle.setFitWidth(paddle.getFitWidth() * 2);
+		} else if (code == KeyCode.A){
+			for (Bouncer bouncer: bouncers){
+				if (!bouncer.getBig())
+					bouncer.setBig();
+			}
 		}
 		previousCode = code;
 

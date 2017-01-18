@@ -1,24 +1,34 @@
 package game;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class PlanetLoc{
+class PlanetLoc {
 	private String name;
 	private int x;
 	private int y;
-	public PlanetLoc(String name, Point location){
+
+	public PlanetLoc(String name, Point location) {
 		this.name = name;
 		this.x = location.getX();
 		this.y = location.getY();
 	}
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
-	public int getX(){
+
+	public int getX() {
 		return x;
 	}
-	public int getY(){
+
+	public int getY() {
 		return y;
 	}
 }
@@ -26,27 +36,41 @@ class PlanetLoc{
 public class LevelsContainer {
 	public static final int SCOREBOARD_HEIGHT = 30;
 	private static HashMap<Integer, ArrayList<PlanetLoc>> levels;
-	public LevelsContainer(){
+
+	public LevelsContainer() {
 		levels = new HashMap<Integer, ArrayList<PlanetLoc>>();
-		//level1
-		ArrayList<PlanetLoc> level1 = new ArrayList<PlanetLoc>();
-		level1.add(new PlanetLoc("mercury", new Point(0, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("venus", new Point(50, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("earth", new Point(100, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("mars", new Point(150, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("mars", new Point(200, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("venus", new Point(250, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("mercury", new Point(300, SCOREBOARD_HEIGHT)));
-		level1.add(new PlanetLoc("pluto", new Point(350, SCOREBOARD_HEIGHT)));
-		levels.put(1, level1);
-		levels.put(2, level1);
-		
-		//level2
-		//ArrayList<PlanetLoc> level2 = new ArrayList<PlanetLoc>();
-		
+		for (int i = 1; i <= Player.MAX_LEVELS; i++){
+			levels.put(i, parseLevel(i));
+		}
 	}
-	
-	public ArrayList<PlanetLoc> getLevel(int level){
+
+	private ArrayList<PlanetLoc> parseLevel(int level) {
+		ArrayList<PlanetLoc> locations = new ArrayList<PlanetLoc>();
+		try {
+			InputStream curLevel = getClass().getClassLoader()
+					.getResourceAsStream("level" + level);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(curLevel));
+			String line = reader.readLine();
+			while (line != null) {
+
+				String[] lineSplit = line.split(" ");
+
+				locations.add(new PlanetLoc(lineSplit[0],
+						new Point(Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2] + SCOREBOARD_HEIGHT))));
+				line = reader.readLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return locations;
+
+	}
+
+	public ArrayList<PlanetLoc> getLevel(int level) {
 		return levels.get(level);
+	}
+
+	public int getLevelWeight(int level) {
+		return levels.get(level).size();
 	}
 }

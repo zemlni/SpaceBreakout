@@ -5,11 +5,13 @@ public class Player {
 	private int level;
 	private int score;
 	private int lives;
+	private int step;
 
 	public Player() {
 		level = 1;
 		score = 0;
 		lives = 3;
+		step = 0;
 	}
 
 	public int getLevel() {
@@ -50,5 +52,11 @@ public class Player {
 		level = 1;
 		score = 0;
 		lives = 3;
+	}
+	public int getStep(){
+		return step;
+	}
+	public void step(){
+		step++;
 	}
 }

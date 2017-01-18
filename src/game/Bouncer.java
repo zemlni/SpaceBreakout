@@ -10,6 +10,7 @@ class Bouncer {
 	private boolean left;
 	private boolean up;
 	private int size;
+	private boolean big;
 
 	public Bouncer() {
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("asteroid.png"));
@@ -18,11 +19,12 @@ class Bouncer {
 		bouncer.setFitWidth(20);
 		speedx = (int) (Math.random() * 100);
 		speedy = (int) (Math.random() * 100);
-		//bouncer.setX(Math.random() * 400);
-		//bouncer.setY(Math.random() * 400);
+		// bouncer.setX(Math.random() * 400);
+		// bouncer.setY(Math.random() * 400);
 		left = false;
 		up = false;
 		size = 20;
+		big = false;
 	}
 
 	public ImageView getBouncer() {
@@ -64,8 +66,20 @@ class Bouncer {
 	public int getRadius() {
 		return size / 2;
 	}
-	
-	public void destroy(){
+
+	public void destroy() {
 		this.bouncer.setVisible(false);
+	}
+
+	public boolean getBig() {
+		return big;
+	}
+
+	public void setBig() {
+		if (big != true) {
+			big = true;
+			bouncer.setFitHeight(bouncer.getFitHeight() * 2);
+			bouncer.setFitWidth(bouncer.getFitWidth() * 2);
+		}
 	}
 }
