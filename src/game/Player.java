@@ -1,7 +1,7 @@
 package game;
 
 public class Player {
-	public static final int MAX_LEVELS = 2;
+	public static final int MAX_LEVELS = 3;
 	private int level;
 	private int score;
 	private int lives;

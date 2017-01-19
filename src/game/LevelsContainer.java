@@ -56,7 +56,7 @@ public class LevelsContainer {
 				String[] lineSplit = line.split(" ");
 
 				locations.add(new PlanetLoc(lineSplit[0],
-						new Point(Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2] + SCOREBOARD_HEIGHT))));
+						new Point(Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2]) + SCOREBOARD_HEIGHT)));
 				line = reader.readLine();
 			}
 		} catch (IOException e) {

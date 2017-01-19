@@ -51,6 +51,8 @@ public class Main extends Application {
 	private Player player;
 	private Stage stage;
 	private KeyCode previousCode;
+	private String status;
+
 	/**
 	 * Initialize what will be displayed and how it will be updated.
 	 */
@@ -65,7 +67,7 @@ public class Main extends Application {
 		animation = new Timeline();
 		animation.setCycleCount(Timeline.INDEFINITE);
 		animation.getKeyFrames().add(frame);
-		animation.play();
+		// animation.play();
 
 		Scene scene = setupGame(SIZE, SIZE, BACKGROUND);
 		s.setScene(scene);
@@ -95,19 +97,19 @@ public class Main extends Application {
 		scoreBoard.setY(0);
 		scoreBoard.setFill(Color.BLACK);
 
-		level = new Text("Level: 1");
+		level = new Text("Level: " + player.getLevel());
 		level.setFill(Color.WHITE);
 		root.getChildren().add(level);
 		level.setX(10);
 		level.setY(20);
 
-		lives = new Text("Lives: 3");
+		lives = new Text("Lives: " + player.getLives());
 		lives.setFill(Color.WHITE);
 		root.getChildren().add(lives);
 		lives.setX(150);
 		lives.setY(20);
 
-		score = new Text("Score: 0");
+		score = new Text("Score: " + player.getScore());
 		score.setFill(Color.WHITE);
 		root.getChildren().add(score);
 		score.setX(300);
@@ -116,16 +118,13 @@ public class Main extends Application {
 		// set up paddle
 		Image ship = new Image(getClass().getClassLoader().getResourceAsStream("ship.png"));
 		paddle = new ImageView(ship);
-		paddle.setFitHeight(10);
-		paddle.setFitWidth(50);
 		root.getChildren().add(paddle);
 		resetPaddle();
 
 		bouncers = new ArrayList<Bouncer>();
 		planets = new ArrayList<Planet>();
+		status = "beginning";
 		showTransitionScreen("beginning");
-		setUpLevel(1);
-		System.out.println("setup");
 
 		// respond to input
 		myScene.setOnKeyPressed(e -> handleKeyPressed(e.getCode()));
@@ -133,13 +132,17 @@ public class Main extends Application {
 		// myScene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
 		return myScene;
 	}
-	private void resetPaddle(){
+
+	private void resetPaddle() {
+		paddle.setFitHeight(10);
+		paddle.setFitWidth(50);
 		paddle.setX(SIZE / 2 - paddle.getBoundsInLocal().getWidth() / 2);
 		paddle.setY(SIZE - paddle.getBoundsInLocal().getHeight());
 		paddleLeft = null;
 	}
 
 	private void setUpLevel(int level) {
+		clearLevel();
 		resetPaddle();
 		ArrayList<PlanetLoc> curLevel = LEVELS.getLevel(level);
 		for (PlanetLoc loc : curLevel) {
@@ -154,11 +157,13 @@ public class Main extends Application {
 		Bouncer asteroid = new Bouncer();
 		bouncers.add(asteroid);
 		root.getChildren().add(asteroid.getBouncer());
-		asteroid.getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2);
+		asteroid.getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2
+				- asteroid.getBouncer().getBoundsInLocal().getWidth() / 2);
 		asteroid.getBouncer().setY(paddle.getY() - asteroid.getBouncer().getBoundsInLocal().getHeight());
 	}
 
-	public void clearLevel() {
+	private void clearLevel() {
+		root.getChildren().remove(screen);
 		for (Planet planet : planets) {
 			root.getChildren().remove(planet.getPlanet());
 		}
@@ -169,33 +174,61 @@ public class Main extends Application {
 		bouncers.clear();
 	}
 
+	private void clearScreen() {
+		root.getChildren().remove(screen);
+		for (Planet planet : planets) {
+			root.getChildren().remove(planet.getPlanet());
+		}
+		for (Bouncer bouncer : bouncers) {
+			root.getChildren().remove(bouncer.getBouncer());
+		}
+	}
+
+	private void resetScreen() {
+		root.getChildren().remove(screen);
+		resetPaddle();
+		for (Planet planet : planets) {
+			root.getChildren().add(planet.getPlanet());
+		}
+		Bouncer asteroid = new Bouncer();
+
+		asteroid.getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2
+				- asteroid.getBouncer().getBoundsInLocal().getWidth() / 2);
+		asteroid.getBouncer().setY(paddle.getY() - asteroid.getBouncer().getBoundsInLocal().getHeight());
+		for (Bouncer bouncer : bouncers) {
+			root.getChildren().remove(bouncer.getBouncer());
+		}
+		bouncers.clear();
+		bouncers.add(asteroid);
+		root.getChildren().add(asteroid.getBouncer());
+	}
+
 	public void showTransitionScreen(String beginning) {
-		clearLevel();
+		// animation.pause();
+		clearScreen();
 		if (beginning.equals("beginning")) {
 			screen = new Text(
-					"Welcome to Space Breakout!\nPress enter to begin.\nUse left and right keys to move \nthe ship.\n"
+					"Welcome to Space Breakout!\nPress enter to view the level \nand enter again to start.\nUse left and right keys to move \nthe ship.\n"
 							+ "Destroy all the planets to win!\nYou must destroy earth last for \nthe humans to escape safely!\n"
 							+ "Good luck!");
 		} else if (beginning.equals("life")) {
 			screen = new Text("You lost a life\nBe careful!\nGood luck!\nPress enter to try again \nor q to quit.");
 		} else if (beginning.equals("level")) {
-			screen = new Text("You passed the level\nGood job!\nPress enter to begin the \nnext level or q to quit.");
+			screen = new Text(
+					"You passed the level\nGood job!\nPress enter to view the \nnext level and enter again to \nstart or q to quit.");
 		} else if (beginning.equals("end")) {
-			screen = new Text("You lost\nBetter luck next time!\nPress enter to start again \nor q to quit.");
+			screen = new Text(
+					"You lost\nBetter luck next time!\nPress enter to view the \nfirst level again and enter again \nto start or q to quit.");
 		} else if (beginning.equals("quit")) {
 			screen = new Text("See you later!\nPress enter to start again \nor q to quit.");
 		} else {// (beginning.equals("win")){
 			screen = new Text("You won!\nCongratulations!\nPress enter to start again \nor q to quit.");
 		}
-		System.out.println("transition");
-		// root.getChildren().add(screen);
 		screen.setFont(Font.font("System Regular", FontWeight.BOLD, 20));
 		screen.setFill(Color.WHITE);
 		root.getChildren().add(screen);
 		screen.setX(40);
 		screen.setY(150);
-		// if (animation.getStatus() == Status.RUNNING)
-		animation.pause();
 	}
 
 	private int sizeDecider(String name) {
@@ -217,45 +250,60 @@ public class Main extends Application {
 	}
 
 	private void gameController(double elapsedTime) {
-		// System.out.println("gamecontroller");
 		if (bouncers.size() == 0) {
-			if (player.getLives() == 0) {
-				showTransitionScreen("end");
-			} else {
-				// resetup current level
-				System.out.println(player.getLevel());
-				player.decrementLives();
-				player.resetScore();
-				showTransitionScreen("life");
+			if (status.equals("play")) {
+				if (player.getLives() == 0) {
+					status = "end";
+					// player.reset();
+					showTransitionScreen(status);
+				} else {
+					player.decrementLives();
+					// player.resetScore();
+					status = "life";
+					showTransitionScreen(status);
+				}
+			} else if (status.equals("wait")) {
 				setUpLevel(player.getLevel());
-
-				// show transition window
-				// wait till enter key is pressed;
+				System.out.println("up here");
 			}
 		}
 
-		if (planets.size() == 0) {
-			player.incrementLevel();
-			System.out.println("passlevel" + player.getLevel());
-			if (player.getLevel() > Player.MAX_LEVELS) {
-				showTransitionScreen("win");
-				player.setLevel(1);
-				setUpLevel(player.getLevel());//sets up level 1 right after winning game. maybe fix
+		else if (planets.size() == 0) {
+			if (status.equals("play")) {
+				player.incrementLevel();
+				System.out.println("passlevel" + player.getLevel());
+				if (player.getLevel() > Player.MAX_LEVELS) {
+					status = "win";
+					showTransitionScreen(status);
+					// player.reset();
 
-			} else {
-				showTransitionScreen("level");
+				} else {
+					System.out.println("In here");
+					status = "level";
+					showTransitionScreen(status);
+				}
+			} else if (status.equals("wait")) {
 				setUpLevel(player.getLevel());
+				System.out.println("up here 2");
 			}
 		}
-
 		step(elapsedTime);
 	}
 
-	// Change properties of shapes to animate them
-	// Note, there are more sophisticated ways to animate shapes, but these
-	// simple ways work fine to start.
 	private void step(double elapsedTime) {
-		// update attributes
+		if (player.getStep() % (PADDLE_STEP / player.getLevel()) == 0 && status.equals("play"))
+			paddle.setY(paddle.getY() - 1);
+		player.step();
+		for (Planet planet : planets) {
+			if (planet.getPlanet().getBoundsInParent().intersects(paddle.getBoundsInParent())) {
+				for (Bouncer bouncer : bouncers) {
+					root.getChildren().remove(bouncer.getBouncer());
+				}
+				bouncers.clear();
+				return;
+			}
+
+		}
 		for (int i = 0; i < bouncers.size(); i++) {
 
 			// check if any planets have been hit
@@ -281,7 +329,7 @@ public class Main extends Application {
 					bouncers.add(temp);
 					temp.getBouncer().setX(planetCenter.getX());
 					temp.getBouncer().setY(planetCenter.getY());
-					if (planets.get(j).getSize() == 70) {
+					if (planets.get(j).getSize() == LARGE_PLANET_SIZE) {
 						Bouncer temp1 = new Bouncer();
 						root.getChildren().add(temp1.getBouncer());
 						bouncers.add(temp1);
@@ -297,18 +345,14 @@ public class Main extends Application {
 			}
 
 			// check if bouncer is hitting any other bouncers
-			/*for (int b = 0; b < bouncers.size(); b++) {
-				if (b != i) {
-					if (bouncers.get(i).getBouncer().getBoundsInParent()
-							.intersects(bouncers.get(b).getBouncer().getBoundsInParent())) {
-						bouncers.get(i).setLeft(!bouncers.get(i).getLeft());
-						bouncers.get(b).setLeft(!bouncers.get(b).getLeft());
-					}
-				}
-			}*/
-			if (player.getStep() % PADDLE_STEP == 0)
-				paddle.setY(paddle.getY() - 1);
-			player.step();
+			/*
+			 * for (int b = 0; b < bouncers.size(); b++) { if (b != i) { if
+			 * (bouncers.get(i).getBouncer().getBoundsInParent()
+			 * .intersects(bouncers.get(b).getBouncer().getBoundsInParent())) {
+			 * bouncers.get(i).setLeft(!bouncers.get(i).getLeft());
+			 * bouncers.get(b).setLeft(!bouncers.get(b).getLeft()); } } }
+			 */
+
 			if (paddle.getBoundsInParent().intersects(bouncers.get(i).getBouncer().getBoundsInParent())) {
 				// bouncer.setLeft(!bouncer.getLeft());
 				bouncers.get(i).setUp(true);
@@ -370,52 +414,85 @@ public class Main extends Application {
 
 	// What to do each time a key is pressed
 	private void handleKeyPressed(KeyCode code) {
-		root.getChildren().remove(screen);
+		// transitionRoot.getChildren().remove(screen);
 		if (code == KeyCode.RIGHT && paddle.getX() < (SIZE - paddle.getBoundsInLocal().getWidth())) {
 			paddleLeft = false;
 			paddle.setX(paddle.getX() + KEY_INPUT_SPEED);
+			if (status.equals("wait")) {
+				bouncers.get(0).getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2
+						- bouncers.get(0).getBouncer().getBoundsInLocal().getWidth() / 2);
+			}
 		} else if (code == KeyCode.LEFT && paddle.getX() > 0) {
 			paddleLeft = true;
 			paddle.setX(paddle.getX() - KEY_INPUT_SPEED);
+			if (status.equals("wait")) {
+				bouncers.get(0).getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2
+						- bouncers.get(0).getBouncer().getBoundsInLocal().getWidth() / 2);
+			}
+			System.out.println(status);
 		} else if (code == KeyCode.ENTER) {
-			// root.getChildren().remove(screen);
-			if (previousCode == KeyCode.Q || (player.getLevel() > Player.MAX_LEVELS && previousCode == KeyCode.N)) {
-				System.out.println("TEST");
-				player.reset();
-				showTransitionScreen("beginning");
-				setUpLevel(1);
-			} else
+			if (status.equals("wait")) {
+				System.out.println("here instead");
+				status = "play";
 				animation.play();
+			} else if (status == null || status.equals("level") || status.equals("beginning")) {
+				System.out.println("wait here");
+				status = "wait";
+				animation.pause();
+				setUpLevel(player.getLevel());
+			} else if (status.equals("life")) {
+				System.out.println("in life");
+				status = "wait";
+				animation.pause();
+				resetScreen();
+			} else if (status.equals("play")) {
+				animation.pause();
+				status = "wait";
+			} else if (status.equals("win") || status.equals("end") || status.equals("quit")) {
+				animation.pause();
+				System.out.println("here");
+				player.reset();
+				status = "beginning";
+				showTransitionScreen(status);
+			}
 		} else if (code == KeyCode.DIGIT1) {
+			status = "level";
 			player.setLevel(1);
 			showTransitionScreen("beginning");
-			setUpLevel(1);
 		} else if (code == KeyCode.DIGIT2) {
 			player.setLevel(2);
+			status = "level";
 			showTransitionScreen("level");
-			setUpLevel(2);
+		} else if (code == KeyCode.DIGIT3) {
+			status = "level";
+			player.setLevel(3);
+			showTransitionScreen("level");
 		} else if (code == KeyCode.L) {
 			player.incrementLives();
 		} else if (code == KeyCode.N) {
 			player.incrementLevel();
 			if (player.getLevel() > Player.MAX_LEVELS) {
-				showTransitionScreen("win");
+				status = "win";
+				showTransitionScreen(status);
 			} else {
-				showTransitionScreen("level");
+				status = "level";
+				showTransitionScreen(status);
 				setUpLevel(player.getLevel());
 			}
 		} else if (code == KeyCode.Q) {
-			if (previousCode == KeyCode.Q)
+			if (status.equals("quit"))
 				stage.close();
-			else
+			else {
 				player.reset();
+				status = "quit";
 				showTransitionScreen("quit");
+			}
 
 		} else if (code == KeyCode.D) {
-			if (paddle.getFitWidth() <= SIZE/2)
+			if (paddle.getFitWidth() <= SIZE / 2)
 				paddle.setFitWidth(paddle.getFitWidth() * 2);
-		} else if (code == KeyCode.A){
-			for (Bouncer bouncer: bouncers){
+		} else if (code == KeyCode.A) {
+			for (Bouncer bouncer : bouncers) {
 				if (!bouncer.getBig())
 					bouncer.setBig();
 			}
