@@ -1,7 +1,10 @@
 package game;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 public class Planet {
 	public static final int LARGE_PLANET_SIZE = 75;
@@ -11,6 +14,8 @@ public class Planet {
 	private int hits;
 	private int size;
 	private String name;
+	private boolean blowingUp;
+	private boolean destroyed;
 
 	public Planet(String name) {
 		this.name = name;
@@ -21,6 +26,8 @@ public class Planet {
 		planet.setFitWidth(this.size);
 		maxHits = size == SMALL_PLANET_SIZE ? 2 : 3;
 		hits = 0;
+		blowingUp = false;
+		destroyed = false;
 	}
 	public String getName(){
 		return name;
@@ -73,5 +80,18 @@ public class Planet {
 	
 	public int getSize(){
 		return size;
+	}
+	public boolean isBlowingUp(){
+		return blowingUp;
+	}
+	public void destroy(){
+		blowingUp = true;
+		planet.setImage(new Image(getClass().getClassLoader().getResourceAsStream("explosion.png")));
+		KeyFrame frame = new KeyFrame(Duration.millis(100), e -> destroyed = true);
+		Timeline temp = new Timeline(frame);
+		temp.play();
+	}
+	public boolean isDestroyed(){
+		return destroyed;
 	}
 }

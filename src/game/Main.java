@@ -27,7 +27,7 @@ public class Main extends Application {
 	public static final int FRAMES_PER_SECOND = 60;
 	public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
 	public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-	public static final int KEY_INPUT_SPEED = 5;
+	public static final int KEY_INPUT_SPEED = 10;
 	public static final int SCOREBOARD_HEIGHT = 30;
 	// public static final int LARGE_PLANET_SIZE = 75;
 	// public static final int SMALL_PLANET_SIZE = 50;
@@ -71,7 +71,7 @@ public class Main extends Application {
 
 	private Scene setupGame(int width, int height, Paint background) {
 		root = new Group();
-		
+
 		myScene = new Scene(root, width, height, background);
 		player = new Player();
 
@@ -216,7 +216,8 @@ public class Main extends Application {
 				screen = new Text(
 						"You passed the level and saved \nthe Humans!\nGood job!\nPress enter to view the \nnext level and enter again to \nstart or q to quit.");
 			else
-				screen = new Text("You passed the level but did \nnot save the Humans :(\nDo better!\nYou are guilty!\nPress enter to view the \nnext level and enter again to \nstart or q to quit.");
+				screen = new Text(
+						"You passed the level but did \nnot save the Humans :(\nDo better!\nYou are guilty!\nPress enter to view the \nnext level and enter again to \nstart or q to quit.");
 		} else if (beginning.equals("end")) {
 			screen = new Text(
 					"You lost\nBetter luck next time!\nPress enter to view the \nfirst level again \nor q to quit.");
@@ -224,9 +225,11 @@ public class Main extends Application {
 			screen = new Text("See you later!\nPress enter to start again \nor q to quit.");
 		} else {// (beginning.equals("win")){
 			if (player.getHumans())
-				screen = new Text("You won and saved the \nHumans!\nCongratulations!\nPress enter to start again \nor q to quit.");
-			else 
-				screen = new Text("You won but did not save \nthe Humans. \nTry harder. \nPress enter to start again \nor q to quit.");
+				screen = new Text(
+						"You won and saved the \nHumans!\nCongratulations!\nPress enter to start again \nor q to quit.");
+			else
+				screen = new Text(
+						"You won but did not save \nthe Humans. \nTry harder. \nPress enter to start again \nor q to quit.");
 		}
 		screen.setFont(Font.font("System Regular", FontWeight.BOLD, 20));
 		screen.setFill(Color.WHITE);
@@ -286,6 +289,7 @@ public class Main extends Application {
 		for (int i = 0; i < bouncers.size(); i++) {
 
 			for (int j = 0; j < planets.size(); j++) {
+				
 				Point planetCenter = getCenter(planets.get(j).getPlanet());
 				Point bouncerCenter = getCenter(bouncers.get(i).getBouncer());
 				int distance = planetCenter.distance(bouncerCenter);
@@ -297,7 +301,25 @@ public class Main extends Application {
 						planets.get(j).incrementHits();
 					}
 				}
+				
 				if (planets.get(j).getHits() >= planets.get(j).getMaxHits()) {
+					//System.out.println(planets.get(j).isBlowingUp());
+					planets.get(j).destroy();
+					/*if (!planets.get(j).isBlowingUp()) {
+						root.getChildren().remove(planets.get(j).getPlanet());
+						if (planets.get(j).getName().equals("earth")) {
+							if (planets.size() == 1)
+								player.setHumans(true);
+						}
+						if (planets.get(j).isBig())
+							makeBouncer(planetCenter.getX(), planetCenter.getY());
+
+						player.incrementScore();
+						planets.remove(j);
+						j--;
+					}*/
+				}
+				if (planets.get(j).isBlowingUp() && planets.get(j).isDestroyed()){
 					root.getChildren().remove(planets.get(j).getPlanet());
 					if (planets.get(j).getName().equals("earth")) {
 						if (planets.size() == 1)
@@ -309,6 +331,7 @@ public class Main extends Application {
 					player.incrementScore();
 					planets.remove(j);
 					j--;
+					System.out.println(j);
 				}
 			}
 
