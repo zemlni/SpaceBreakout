@@ -9,8 +9,8 @@ public class Point {
 		this.y = y;
 	}
 	
-	public static int distance(Point p1, Point p2){
-		return (int) Math.hypot(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+	public int distance(Point p2){
+		return (int) Math.hypot(x - p2.getX(), y - p2.getY());
 	}
 
 	public int getX() {

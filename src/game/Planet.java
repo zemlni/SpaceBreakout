@@ -4,19 +4,47 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Planet {
+	public static final int LARGE_PLANET_SIZE = 75;
+	public static final int SMALL_PLANET_SIZE = 50;
 	private ImageView planet;
 	private int maxHits;
 	private int hits;
 	private int size;
+	private String name;
 
-	public Planet(String src, int size) {
-		Image image = new Image(getClass().getClassLoader().getResourceAsStream(src));
+	public Planet(String name) {
+		this.name = name;
+		Image image = new Image(getClass().getClassLoader().getResourceAsStream(name + ".png"));
 		planet = new ImageView(image);
-		this.size = size;
+		size = sizeDecider(name);
 		planet.setFitHeight(this.size);
 		planet.setFitWidth(this.size);
-		this.maxHits = size == 50 ? 2 : 3;
-		this.hits = 0;
+		maxHits = size == SMALL_PLANET_SIZE ? 2 : 3;
+		hits = 0;
+	}
+	public String getName(){
+		return name;
+	}
+	private int sizeDecider(String name) {
+		switch (name) {
+		case "mercury":
+		case "venus":
+		case "mars":
+		case "earth":
+		case "pluto":
+			return SMALL_PLANET_SIZE;
+		case "jupiter":
+		case "saturn":
+		case "neptune":
+		case "uranus":
+			return LARGE_PLANET_SIZE;
+		default:
+			return -1;
+		}
+	}
+	
+	public boolean isBig(){
+		return size == LARGE_PLANET_SIZE;
 	}
 
 	public ImageView getPlanet() {
@@ -41,10 +69,6 @@ public class Planet {
 
 	public int getRadius() {
 		return size/2;
-	}
-	
-	public void destroy(){
-		this.planet.setVisible(false);
 	}
 	
 	public int getSize(){

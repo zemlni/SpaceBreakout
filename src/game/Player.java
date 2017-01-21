@@ -6,12 +6,11 @@ public class Player {
 	private int score;
 	private int lives;
 	private int step;
+	private boolean fast;
+	private boolean humans;
 
 	public Player() {
-		level = 1;
-		score = 0;
-		lives = 3;
-		step = 0;
+		reset();
 	}
 
 	public int getLevel() {
@@ -52,6 +51,20 @@ public class Player {
 		level = 1;
 		score = 0;
 		lives = 3;
+		fast = false;
+		humans = false;
+	}
+	public boolean getHumans(){
+		return humans;
+	}
+	public void setHumans(boolean humans){
+		this.humans = humans;
+	}
+	public boolean isFast(){
+		return fast;
+	}
+	public void setFast(boolean fast){
+		this.fast = fast;
 	}
 	public int getStep(){
 		return step;

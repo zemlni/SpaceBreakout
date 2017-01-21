@@ -1,8 +1,6 @@
 package game;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,13 +32,16 @@ class PlanetLoc {
 }
 
 public class LevelsContainer {
-	public static final int SCOREBOARD_HEIGHT = 30;
 	private static HashMap<Integer, ArrayList<PlanetLoc>> levels;
+	private static HashMap<Integer, Integer> sizes;
 
 	public LevelsContainer() {
 		levels = new HashMap<Integer, ArrayList<PlanetLoc>>();
+		sizes = new HashMap<Integer, Integer>();
 		for (int i = 1; i <= Player.MAX_LEVELS; i++){
-			levels.put(i, parseLevel(i));
+			ArrayList<PlanetLoc> result = parseLevel(i);
+			levels.put(i, result);
+			sizes.put(i, result.size());
 		}
 	}
 
@@ -56,7 +57,7 @@ public class LevelsContainer {
 				String[] lineSplit = line.split(" ");
 
 				locations.add(new PlanetLoc(lineSplit[0],
-						new Point(Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2]) + SCOREBOARD_HEIGHT)));
+						new Point(Integer.parseInt(lineSplit[1]), Integer.parseInt(lineSplit[2]) + Main.SCOREBOARD_HEIGHT)));
 				line = reader.readLine();
 			}
 		} catch (IOException e) {
@@ -72,5 +73,9 @@ public class LevelsContainer {
 
 	public int getLevelWeight(int level) {
 		return levels.get(level).size();
+	}
+	
+	public int getLevelSize(int level){
+		return sizes.get(level);
 	}
 }
