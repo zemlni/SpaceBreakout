@@ -286,8 +286,8 @@ public class Main extends Application {
 				bouncer.doubleSpeed();
 			}
 		}
+		
 		for (int i = 0; i < bouncers.size(); i++) {
-
 			for (int j = 0; j < planets.size(); j++) {
 				
 				Point planetCenter = getCenter(planets.get(j).getPlanet());
@@ -302,23 +302,9 @@ public class Main extends Application {
 					}
 				}
 				
-				if (planets.get(j).getHits() >= planets.get(j).getMaxHits()) {
-					//System.out.println(planets.get(j).isBlowingUp());
+				if (planets.get(j).getHits() >= planets.get(j).getMaxHits()) 
 					planets.get(j).destroy();
-					/*if (!planets.get(j).isBlowingUp()) {
-						root.getChildren().remove(planets.get(j).getPlanet());
-						if (planets.get(j).getName().equals("earth")) {
-							if (planets.size() == 1)
-								player.setHumans(true);
-						}
-						if (planets.get(j).isBig())
-							makeBouncer(planetCenter.getX(), planetCenter.getY());
 
-						player.incrementScore();
-						planets.remove(j);
-						j--;
-					}*/
-				}
 				if (planets.get(j).isBlowingUp() && planets.get(j).isDestroyed()){
 					root.getChildren().remove(planets.get(j).getPlanet());
 					if (planets.get(j).getName().equals("earth")) {
