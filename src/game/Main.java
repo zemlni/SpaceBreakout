@@ -29,8 +29,6 @@ public class Main extends Application {
 	public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
 	public static final int KEY_INPUT_SPEED = 10;
 	public static final int SCOREBOARD_HEIGHT = 30;
-	// public static final int LARGE_PLANET_SIZE = 75;
-	// public static final int SMALL_PLANET_SIZE = 50;
 	public static final LevelsContainer LEVELS = new LevelsContainer();
 	public static final int PADDLE_STEP = 100;
 	private Timeline animation;
