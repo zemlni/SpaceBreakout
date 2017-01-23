@@ -1,5 +1,9 @@
 package game;
-
+/**
+ * Wrapper for imageview for purpose of displaying planets 
+ * as blocks. Planet related actions live here
+ * @author Nikita Zemlevskiy.
+ */
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.Image;
@@ -16,7 +20,10 @@ public class Planet {
 	private String name;
 	private boolean blowingUp;
 	private boolean destroyed;
-
+	/**
+	 * Make a new planet with the picture taken from name.
+	 * @param name name of planet 
+	 */
 	public Planet(String name) {
 		this.name = name;
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream(name + ".png"));
@@ -32,6 +39,11 @@ public class Planet {
 	public String getName(){
 		return name;
 	}
+	/**
+	 * Decide the size of a given planet
+	 * @param name name of planet
+	 * @return size of planet to be displayer
+	 */
 	private int sizeDecider(String name) {
 		switch (name) {
 		case "mercury":
@@ -84,6 +96,9 @@ public class Planet {
 	public boolean isBlowingUp(){
 		return blowingUp;
 	}
+	/**
+	 * Display blowing up animation.
+	 */
 	public void destroy(){
 		blowingUp = true;
 		planet.setImage(new Image(getClass().getClassLoader().getResourceAsStream("explosion.png")));

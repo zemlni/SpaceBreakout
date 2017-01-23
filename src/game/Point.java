@@ -1,5 +1,8 @@
 package game;
-
+/**
+ * Represents a cartesian point. 
+ * @author Nikita Zemlevskiy
+ */
 public class Point {
 	private int x;
 	private int y;
@@ -8,7 +11,10 @@ public class Point {
 		this.x = x;
 		this.y = y;
 	}
-	
+	/**
+	 * Get distance between this point and another point.
+	 * @param p2 other point
+	 */
 	public int distance(Point p2){
 		return (int) Math.hypot(x - p2.getX(), y - p2.getY());
 	}

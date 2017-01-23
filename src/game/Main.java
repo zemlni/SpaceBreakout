@@ -1,5 +1,11 @@
 package game;
-
+/**
+ * Main class to run the game. 
+ * Takes care of status display, transition screens and gameplay.
+ * @author Nikita Zemlevskiy
+ * Code borrowed from in class example from Robert Duvall.
+ * 
+ */
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -49,6 +55,7 @@ public class Main extends Application {
 
 	/**
 	 * Initialize what will be displayed and how it will be updated.
+	 * @param stage the stage with which to start the game
 	 */
 	@Override
 	public void start(Stage s) {
@@ -66,7 +73,16 @@ public class Main extends Application {
 		s.show();
 
 	}
-
+	/**
+	 * Set up the scene of the game. Includes setting up 
+	 * the scoreboard, setting up the background, the paddle
+	 * initializing the levels container and the bouncer.
+	 * 
+	 * @param width width of the game window
+	 * @param height height of the game window
+	 * @param background Color of background
+	 * @return Scene in which gameplay takes place
+	 */
 	private Scene setupGame(int width, int height, Paint background) {
 		root = new Group();
 
@@ -108,7 +124,12 @@ public class Main extends Application {
 		myScene.setOnKeyReleased(e -> handleKeyReleased(e.getCode()));
 		return myScene;
 	}
-
+	/**
+	 * Set X and Y coordinates of some Node
+	 * @param element node to place in the screen
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 */
 	private void setXY(Node element, double x, double y) {
 		if (element instanceof Rectangle) {
 			Rectangle rect = (Rectangle) element;
@@ -124,12 +145,20 @@ public class Main extends Application {
 			text.setY(y);
 		}
 	}
-
+	/**
+	 * Set X and Y coordinates and add to root
+	 * @param element node to place in the screen
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 */
 	private void setXYAndAdd(Node element, double x, double y) {
 		setXY(element, x, y);
 		root.getChildren().add(element);
 	}
-
+	/**
+	 * Reset paddle location at beginning of level 
+	 * or at a loss of a life
+	 */
 	private void resetPaddle() {
 		paddle.setFitHeight(10);
 		paddle.setFitWidth(50);
@@ -137,7 +166,10 @@ public class Main extends Application {
 				SIZE - paddle.getBoundsInLocal().getHeight());
 		paddleLeft = null;
 	}
-
+	/**
+	 * Set up a level at beginning of game or at loss of a life
+	 * @param level level to be set up
+	 */
 	private void setUpLevel(int level) {
 		clearLevel();
 		resetPaddle();
@@ -149,7 +181,13 @@ public class Main extends Application {
 		}
 		makeBouncer(-1, -1);
 	}
-
+	/**
+	 *Generate a new bouncer with given coordinates. 
+	 *if coordinates are both -1 then will generate a bouncer
+	 *at the coordinates of the paddle
+	 *@param x x coordinate
+	 *@param y y coordinate
+	 */
 	private void makeBouncer(double x, double y) {
 		Bouncer temp1 = new Bouncer();
 		bouncers.add(temp1);
@@ -160,13 +198,17 @@ public class Main extends Application {
 		}
 		setXYAndAdd(temp1.getBouncer(), x, y);
 	}
-
+	/**
+	 * clear level
+	 * */
 	private void clearLevel() {
 		clearScreen();
 		planets.clear();
 		bouncers.clear();
 	}
-
+	/**
+	 * clear screen
+	 */
 	private void clearScreen() {
 		root.getChildren().remove(screen);
 		for (Planet planet : planets) {
@@ -191,7 +233,10 @@ public class Main extends Application {
 			root.getChildren().add(planet.getPlanet());
 		}
 	}
-
+	/**
+	 * reset screen but do not remove planets. 
+	 * Happens when life is lost
+	 */
 	private void resetScreen() {
 		root.getChildren().remove(screen);
 		resetPaddle();
@@ -199,7 +244,10 @@ public class Main extends Application {
 		removeBouncersFromRootAndClear();
 		makeBouncer(-1, -1);
 	}
-
+	/**
+	 * Handle displaying transition screens
+	 * @param beginning string to tell which transition screen to display
+	 */
 	public void showTransitionScreen(String beginning) {
 		clearScreen();
 		if (beginning.equals("beginning")) {
@@ -233,7 +281,10 @@ public class Main extends Application {
 		screen.setFill(Color.WHITE);
 		setXYAndAdd(screen, 30, 150);
 	}
-
+	/**
+	 * Game loop. Check each step for game status
+	 * @param elapsedTime time in between the steps
+	 */
 	private void gameController(double elapsedTime) {
 		if (bouncers.size() == 0) {
 			if (status.equals("play")) {
@@ -267,18 +318,22 @@ public class Main extends Application {
 		}
 		step(elapsedTime);
 	}
-
+	/**
+	 * Update positions of all elements in the game.
+	 */
 	private void step(double elapsedTime) {
+		//move paddle up
 		if (player.getStep() % (PADDLE_STEP / player.getLevel()) == 0 && status.equals("play"))
 			paddle.setY(paddle.getY() - 1);
 		player.step();
+
 		for (Planet planet : planets) {
 			if (planet.getPlanet().getBoundsInParent().intersects(paddle.getBoundsInParent())) {
 				removeBouncersFromRootAndClear();
 				return;
 			}
-
 		}
+		//increase speed of all bouncers if more than half of planets cleared
 		if (player.getLevel() <= Player.MAX_LEVELS && planets.size() <= LEVELS.getLevelSize(player.getLevel()) / 2) {
 			for (Bouncer bouncer : bouncers) {
 				bouncer.doubleSpeed();
@@ -287,22 +342,24 @@ public class Main extends Application {
 		
 		for (int i = 0; i < bouncers.size(); i++) {
 			for (int j = 0; j < planets.size(); j++) {
-				
+				//check if planets hit
 				Point planetCenter = getCenter(planets.get(j).getPlanet());
 				Point bouncerCenter = getCenter(bouncers.get(i).getBouncer());
 				int distance = planetCenter.distance(bouncerCenter);
 				int sum = bouncers.get(i).getRadius() + planets.get(j).getRadius();
+				
 				if (distance <= sum) {
+					//bounce bouncers and hit planet
 					bouncers.get(i).setUp(false);
 					if (bouncers.get(i).getHits() == true) {
 						bouncers.get(i).hit();
 						planets.get(j).incrementHits();
 					}
 				}
-				
+				//make planet blow up
 				if (planets.get(j).getHits() >= planets.get(j).getMaxHits()) 
 					planets.get(j).destroy();
-
+				
 				if (planets.get(j).isBlowingUp() && planets.get(j).isDestroyed()){
 					root.getChildren().remove(planets.get(j).getPlanet());
 					if (planets.get(j).getName().equals("earth")) {
@@ -318,7 +375,7 @@ public class Main extends Application {
 					System.out.println(j);
 				}
 			}
-
+			//bounce bouncers off paddle
 			if (paddle.getBoundsInParent().intersects(bouncers.get(i).getBouncer().getBoundsInParent())) {
 				bouncers.get(i).setUp(true);
 				if (paddleLeft != null) {
@@ -328,7 +385,7 @@ public class Main extends Application {
 						bouncers.get(i).setSpeedX(bouncers.get(i).getSpeedX() - KEY_INPUT_SPEED);
 				}
 			}
-
+			//bounce bouncers off walls
 			double locationx = bouncers.get(i).getBouncer().getX();
 
 			if (locationx >= SIZE - bouncers.get(i).getBouncer().getBoundsInLocal().getWidth()) {
@@ -353,26 +410,33 @@ public class Main extends Application {
 			}
 			sign = bouncers.get(i).getUp() == true ? -1 : 1;
 			bouncers.get(i).getBouncer().setY(locationy + sign * bouncers.get(i).getSpeedY() * elapsedTime);
-
+			
+			//update scoreboard status
 			score.setText("Score: " + player.getScore());
 		}
 		lives.setText("Lives: " + player.getLives());
 		level.setText("Level: " + player.getLevel());
 
 	}
-
+	
+	/**
+	 * Gets center of imageview object. Useful for planets
+	 * @param im imageview object to get center of
+	 */
 	private Point getCenter(ImageView im) {
 		int x = (int) (im.getX() + im.getBoundsInLocal().getWidth() / 2);
 		int y = (int) (im.getY() + im.getBoundsInLocal().getHeight() / 2);
 		return new Point(x, y);
 	}
 
+	/**
+	 * react to keys pressed on keyboard
+	 * @param code Keycode of key pressed 
+	 */
 	private void handleKeyPressed(KeyCode code) {
-		if (code == KeyCode.RIGHT /*
-									 * && paddle.getX() < (SIZE -
-									 * paddle.getBoundsInLocal().getWidth())
-									 */) {
+		if (code == KeyCode.RIGHT ) {
 			paddleLeft = false;
+			//warp check
 			if (paddle.getX() < (SIZE - paddle.getBoundsInLocal().getWidth() / 2))
 				paddle.setX(paddle.getX() + KEY_INPUT_SPEED);
 			else
@@ -381,8 +445,9 @@ public class Main extends Application {
 				bouncers.get(0).getBouncer().setX(paddle.getX() + paddle.getBoundsInLocal().getWidth() / 2
 						- bouncers.get(0).getBouncer().getBoundsInLocal().getWidth() / 2);
 			}
-		} else if (code == KeyCode.LEFT /* && paddle.getX() > 0 */) {
+		} else if (code == KeyCode.LEFT) {
 			paddleLeft = true;
+			//warp check
 			if (paddle.getX() > -paddle.getBoundsInLocal().getWidth() / 2)
 				paddle.setX(paddle.getX() - KEY_INPUT_SPEED);
 			else
@@ -396,6 +461,7 @@ public class Main extends Application {
 				status = "play";
 				animation.play();
 			} else if (status == null || status.equals("level") || status.equals("beginning")) {
+				//need to wait for playerin some cases
 				pauseOnButton();
 				setUpLevel(player.getLevel());
 			} else if (status.equals("life")) {

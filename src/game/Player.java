@@ -1,5 +1,8 @@
 package game;
-
+/*Represents state of the game for the user.
+ * @author Nikita Zemlevskiy.
+ * 
+ * */
 public class Player {
 	public static final int MAX_LEVELS = 3;
 	private int level;

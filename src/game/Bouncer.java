@@ -7,7 +7,11 @@ import javafx.animation.Timeline;
 
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-
+/**
+ * Wrapper for imageview for purpose of maintaining bouncers.
+ * All things bouncer related live here
+ * @author Nikita Zemlevskiy.
+ */
 class Bouncer {
 	public static final int BOUNCER_BASE_SPEED = 200;
 	public static final int BOUNCER_SIZE = 20;
@@ -78,7 +82,9 @@ class Bouncer {
 	public boolean getBig() {
 		return big;
 	}
-
+	/**
+	 * double size of bouncer. called on keypress a
+	 */
 	public void setBig() {
 		if (big != true) {
 			big = true;
@@ -89,12 +95,19 @@ class Bouncer {
 	public boolean getHits(){
 		return hits;
 	}
+	/**
+	 * disable hits for 5 ms after bouncer has hit a planet.
+	 * fixes double hit issue.
+	 */
 	public void hit(){
 		hits = false;
 		KeyFrame frame = new KeyFrame(Duration.millis(5), e -> hits = true);
 		Timeline temp = new Timeline(frame);
 		temp.play();
 	}
+	/**
+	 * double speed of bouncer.
+	 */
 	public void doubleSpeed(){
 		if (!fast){
 			speedx *= 2;

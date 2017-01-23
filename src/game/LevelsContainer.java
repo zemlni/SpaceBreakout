@@ -6,7 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ * contains a planet location and its name
+ * @author Nikita Zemlevskiy.
+ */
 class PlanetLoc {
 	private String name;
 	private int x;
@@ -30,7 +33,10 @@ class PlanetLoc {
 		return y;
 	}
 }
-
+/**
+ * Loads levels from files. Stores levels and their initial sizes.
+ *@author Nikita Zemlevskiy.
+ */
 public class LevelsContainer {
 	private static HashMap<Integer, ArrayList<PlanetLoc>> levels;
 	private static HashMap<Integer, Integer> sizes;
@@ -44,7 +50,9 @@ public class LevelsContainer {
 			sizes.put(i, result.size());
 		}
 	}
-
+	/**
+	 *Parse level files and populate levels map. 
+	 */
 	private ArrayList<PlanetLoc> parseLevel(int level) {
 		ArrayList<PlanetLoc> locations = new ArrayList<PlanetLoc>();
 		try {
@@ -69,10 +77,6 @@ public class LevelsContainer {
 
 	public ArrayList<PlanetLoc> getLevel(int level) {
 		return levels.get(level);
-	}
-
-	public int getLevelWeight(int level) {
-		return levels.get(level).size();
 	}
 	
 	public int getLevelSize(int level){
