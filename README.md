@@ -34,7 +34,7 @@ cheat codes and input:
 Project fully functional. English may be bad.
 
 ###any extra features included in the project
-Paddle warps around. If you don't destroy earth last you will be doomed. Planets explode on reaching max hits.
+Paddle warps around. If you don't destroy earth last you will be doomed. Planets explode on reaching max hits. If you hit the ball and the paddle is moving the same x direction as the ball the ball will speed up. Opposite directions-slow down. There is a chance to "slice the asteroid" and make it go even faster.
 
 ###your impressions of the assignment to help improve it in the future
 It was a great first assignment. I wish I knew about the readme and documentation requirements earlier, these seemed to have escaped my eye.
