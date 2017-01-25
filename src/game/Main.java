@@ -335,27 +335,15 @@ public class Main extends Application {
 		}
 		//increase speed of all bouncers if more than half of planets cleared
 		if (player.getLevel() <= Player.MAX_LEVELS && planets.size() <= LEVELS.getLevelSize(player.getLevel()) / 2) {
-			for (Bouncer bouncer : bouncers) {
+			for (Bouncer bouncer : bouncers) 
 				bouncer.doubleSpeed();
-			}
 		}
 		
 		for (int i = 0; i < bouncers.size(); i++) {
 			for (int j = 0; j < planets.size(); j++) {
 				//check if planets hit
-				Point planetCenter = getCenter(planets.get(j).getPlanet());
-				Point bouncerCenter = getCenter(bouncers.get(i).getBouncer());
-				int distance = planetCenter.distance(bouncerCenter);
-				int sum = bouncers.get(i).getRadius() + planets.get(j).getRadius();
+				Point planetCenter = bouncers.get(i).checkPlanetHit(planets.get(j));
 				
-				if (distance <= sum) {
-					//bounce bouncers and hit planet
-					bouncers.get(i).setUp(false);
-					if (bouncers.get(i).getHits() == true) {
-						bouncers.get(i).hit();
-						planets.get(j).incrementHits();
-					}
-				}
 				//make planet blow up
 				if (planets.get(j).getHits() >= planets.get(j).getMaxHits()) 
 					planets.get(j).destroy();
@@ -372,45 +360,18 @@ public class Main extends Application {
 					player.incrementScore();
 					planets.remove(j);
 					j--;
-					System.out.println(j);
 				}
 			}
-			//bounce bouncers off paddle
-			if (paddle.getBoundsInParent().intersects(bouncers.get(i).getBouncer().getBoundsInParent())) {
-				bouncers.get(i).setUp(true);
-				if (paddleLeft != null) {
-					if (paddleLeft.equals(bouncers.get(i).getLeft()))
-						bouncers.get(i).setSpeedX(bouncers.get(i).getSpeedX() + KEY_INPUT_SPEED);
-					else
-						bouncers.get(i).setSpeedX(bouncers.get(i).getSpeedX() - KEY_INPUT_SPEED);
-				}
-			}
-			//bounce bouncers off walls
-			double locationx = bouncers.get(i).getBouncer().getX();
 
-			if (locationx >= SIZE - bouncers.get(i).getBouncer().getBoundsInLocal().getWidth()) {
-				bouncers.get(i).setLeft(true);
-			}
-			if (locationx <= 0) {
-				bouncers.get(i).setLeft(false);
-			}
-			int sign = bouncers.get(i).getLeft() == true ? -1 : 1;
-			bouncers.get(i).getBouncer().setX(locationx + sign * bouncers.get(i).getSpeedX() * elapsedTime);
-
-			double locationy = bouncers.get(i).getBouncer().getY();
-
-			if (locationy >= SIZE - bouncers.get(i).getBouncer().getBoundsInLocal().getWidth()) {
+			bouncers.get(i).bounceOffPaddle(paddle, paddleLeft);
+			//move and bounce bouncers off walls and remove if fell off bottom
+			
+			if (bouncers.get(i).step(elapsedTime)){
 				root.getChildren().remove(bouncers.get(i).getBouncer());
 				bouncers.remove(i);
 				i--;
 				continue;
 			}
-			if (locationy <= SCOREBOARD_HEIGHT) {
-				bouncers.get(i).setUp(false);
-			}
-			sign = bouncers.get(i).getUp() == true ? -1 : 1;
-			bouncers.get(i).getBouncer().setY(locationy + sign * bouncers.get(i).getSpeedY() * elapsedTime);
-			
 			//update scoreboard status
 			score.setText("Score: " + player.getScore());
 		}
@@ -419,15 +380,6 @@ public class Main extends Application {
 
 	}
 	
-	/**
-	 * Gets center of imageview object. Useful for planets
-	 * @param im imageview object to get center of
-	 */
-	private Point getCenter(ImageView im) {
-		int x = (int) (im.getX() + im.getBoundsInLocal().getWidth() / 2);
-		int y = (int) (im.getY() + im.getBoundsInLocal().getHeight() / 2);
-		return new Point(x, y);
-	}
 
 	/**
 	 * react to keys pressed on keyboard
