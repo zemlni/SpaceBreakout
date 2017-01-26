@@ -1,5 +1,19 @@
 package game;
-
+/* This entire file is part of my masterpiece.
+ * Nikita Zemlevskiy
+ * The purpose of this class is to store all bouncer related information and
+ * tasks. The bouncer instance variables are here and decisions on how to 
+ * change position on each step of the game are also made here. I think that
+ * this class is well designed because there is little code stinks in here.
+ * I wrote a lot in my ANALYSIS.md about how I did not give enough power to
+ * the bouncer and planet classes as I should have, and instead put all of 
+ * the decision making in main. With this refactor, I have diverted some of 
+ * that control to here. In doing so, I was also able to get rid of a lot of 
+ * data dependencies and if statements. Additionally, by putting the control
+ * in here instead of in main, this fixes the problem of the bouncer object 
+ * being told what to do, instead of just living on its own like objects are
+ * supposed to do.
+ */
 
 import javafx.scene.image.Image;
 import javafx.animation.KeyFrame;
@@ -12,7 +26,7 @@ import javafx.util.Duration;
  * All things bouncer related live here
  * @author Nikita Zemlevskiy.
  */
-class Bouncer {
+public class Bouncer {
 	public static final int BOUNCER_BASE_SPEED = 200;
 	public static final int BOUNCER_SIZE = 20;
 	private ImageView bouncer;
@@ -160,7 +174,6 @@ class Bouncer {
 		int sum = getRadius() + planet.getRadius();
 		
 		if (distance <= sum) {
-			//bounce bouncers and hit planet
 			setUp(false);
 			if (getHits()) {
 				hit();
@@ -170,8 +183,10 @@ class Bouncer {
 		return planetCenter;
 	}
 	/**
-	 * Gets center of imageview object. Useful for planets
-	 * @param im imageview object to get center of
+	 * Gets center of ImageView object. Useful for planets and bouncers.
+	 * used in determining when something is hit
+	 * @param im ImageView object to get center of
+	 * @return the center point of the ImageView object.
 	 */
 	private Point getCenter(ImageView im) {
 		int x = (int) (im.getX() + im.getBoundsInLocal().getWidth() / 2);
@@ -179,6 +194,16 @@ class Bouncer {
 		return new Point(x, y);
 	}
 
+	/**Handles bouncing off of the paddle on striking it.
+	 * First test for contact and if contact 
+	 * exists then a bounce is made, speeding up
+	 * or slowing down the bouncer depending on whether
+	 * the direction of motion of the paddle and bouncer are the same.
+	 * 
+	 * @param paddle the paddle ImageView from main.
+	 * @param paddleLeft the paddleLeft variable that tells whether the paddle
+	 * 		is moving left or right or stationary.
+	 */
 	public void bounceOffPaddle(ImageView paddle, Boolean paddleLeft) {
 		if (paddle.getBoundsInParent().intersects(getBouncer().getBoundsInParent())) {
 			setUp(true);
@@ -188,8 +213,6 @@ class Bouncer {
 				else
 					setSpeedX(getSpeedX() - Main.KEY_INPUT_SPEED);
 			}
-		}
-		
+		}		
 	}
-	
 }
